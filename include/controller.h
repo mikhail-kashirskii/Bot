@@ -13,15 +13,14 @@ class BotController {
     bool Get(std::string str) {
         auto res = cli.Get(str.c_str());
         if (res && res->status == 200) {
-            std::cout << res->body << std::endl;
+            std::cout << "Got " << str << ": " << res->body << std::endl;
             return true;
         }
         return false;
     }
 
     bool Post(BotTargetType &t) {
-        std::string str=to_string(t);
-        std::cout << str <<std::endl;
+        std::string str = to_string(t);
         auto res = cli.Post("/", str.c_str(), "text/plain");
         return res && res->status == 200 && res->body == "OK";
     }
