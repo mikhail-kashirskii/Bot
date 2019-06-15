@@ -1,25 +1,12 @@
 #include <iostream>
-#include <httplib.h>
-#include <nlohmann/json.hpp>
-#include <utils.h>
+#include <controller.h>
 
-using namespace httplib;
 int main() {
-    httplib::Client cli("localhost", 1234);
+    BotController C;
 
-    auto res = cli.Get("/numbers/1234"); 
-    if (res && res->status == 200) {
-        std::cout << res->body << std::endl;
-    }
-    BotTargetType t;
-    t.x = 1;
-    t.y = 2;
-    std::string str=to_string(t);
-    std::cout << str <<std::endl;
-    res = cli.Post("/post", str.c_str(), "text/plain");
-    if (res && res->status == 200) {
-        std::cout << res->body << std::endl;
-    }
+    BotTargetType t = {100, 100, 0, 10, 1};
+    assert ( C.Post(t) );
+    assert ( C.Get("status") );
     std::cout << "DONE" <<std::endl;
     return 0;
 }
