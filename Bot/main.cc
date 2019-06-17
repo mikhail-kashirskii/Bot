@@ -9,6 +9,7 @@ using namespace httplib;
 using json = nlohmann::json;
 
 class Bot {
+    const chrono::milliseconds PollingFrequency = chrono::milliseconds(100);
     typedef struct {
         coord_t wheelSize;
         coord_t wheelDist;
@@ -18,6 +19,7 @@ class Bot {
     Server svr;
     BotConfigType config;
     queue<BotTargetType> targets;
+    std::atomic<int> numTargets;
     BotStatusType<atomic<coord_t>> status;
     std::future<void> engine;
     std::future<void> controller;
@@ -28,25 +30,31 @@ class Bot {
                 status.p.x += status.speed;
                 status.p.y += status.speed;
             }
-            this_thread::sleep_for(chrono::milliseconds(100));
+            this_thread::sleep_for(PollingFrequency);
         }
 
     }
     void Controller() {
         while(1) {
-            if (status.speed == 0 && !targets.empty()) {
-                status.speed = targets.front().velocity;
-            }
-            if (status.speed) {
-                cout << "Current status: " << status << endl;
-                coord2d_t p = {status.p.x, status.p.y};
-                if (distance(targets.front().p, p)   <= config.epsilon) {
-                    cout << "Target " << targets.front() <<" achieved!" << endl;
-                    status.speed = 0;
-                    targets.pop();
+            if (numTargets.load(std::memory_order_relaxed)) {
+                std::atomic_thread_fence(std::memory_order_acquire);
+
+                if (status.speed == 0 && !targets.empty()) {
+                    status.speed = targets.front().velocity;
+                }
+                if (status.speed) {
+                    cout << "Current status: " << status << endl;
+                    coord2d_t p = {status.p.x, status.p.y};
+                    if (distance(targets.front().p, p)   <= config.epsilon) {
+                        cout << "Target " << targets.front() <<" achieved!" << endl;
+                        status.speed = 0;
+                        targets.pop();
+                        std::atomic_thread_fence(std::memory_order_release);
+                        numTargets.fetch_sub(1, std::memory_order_relaxed);
+                    }
                 }
             }
-            this_thread::sleep_for(chrono::milliseconds(100));
+            this_thread::sleep_for(PollingFrequency);
         }
     }
 
@@ -94,6 +102,7 @@ class Bot {
                 assert ( getline(iss, token, ' '));
                 t.accel = stoi(token);
                 targets.emplace(t);
+                numTargets.fetch_add(1, std::memory_order_release);
                 cout << "Received new target: " << t << endl;
                 });
         svr.listen(BOT_HOST, BOT_PORT);
