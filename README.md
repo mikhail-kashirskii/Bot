@@ -1,11 +1,37 @@
 # Bot
-==============
+
+Example application
+--------------
+```c++
+#include <iostream>
+#include <controller.h>
+
+int main() {
+    BotController C;
+
+    BotTargetType t1 = {100, 100, 0, 10, 1}; //x, y, theta, velocity, accel
+    BotTargetType t2 = {200, 200, 0, 10, 1}; //x, y, theta, velocity, accel
+    assert ( C.Post(t1) );
+    assert ( C.Post(t2) );
+    assert ( C.Get("status") );
+    this_thread::sleep_for(chrono::milliseconds(500));
+    assert ( C.Get("status") );
+    this_thread::sleep_for(chrono::milliseconds(1000));
+    assert ( C.Get("status") );
+    this_thread::sleep_for(chrono::milliseconds(3000));
+    assert ( C.Get("status") );
+    std::cout << "DONE" <<std::endl;
+    return 0;
+}
+```
 
 Instruction to compile and run.
 --------------
 1. Compile the project and run the Bot:
 
+```c++
     $ mkdir build && cd build && cmake .. && make -j4 all && Bot/bot ../configs/config.json
+```
 
 Expected output (Config read and the Bot is ready):
 
@@ -13,7 +39,9 @@ Expected output (Config read and the Bot is ready):
 
 2. Use another console to run the example application to send the commands to the Bot and get its status:
 
+```c++
     $ Example/example 
+```
 
 Expected output (status format: X, Y, Theta, Speed)
 
