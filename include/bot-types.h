@@ -16,7 +16,7 @@ typedef struct {
 
 typedef struct {
     coord2d_t p;
-    coord_t theta;
+    double theta;
     coord_t velocity;
     coord_t accel;
 } BotTargetType;
@@ -28,14 +28,14 @@ struct  BotStatusType{
         T y;
         p():x(0), y(0){}
     } p;
-    T theta;
+    double theta;
     T speed;
     BotStatusType():theta(0), speed(0){}
 };
 
 ostream& operator<<(ostream& os, const BotTargetType& t)
 {
-    os << t.p.x << " " << t.p.y << " " << t.theta \
+    os << t.p.x << " " << t.p.y << " " << floor(180*t.theta/M_PI) \
        << " " << t.velocity << " " << t.accel;
     return os;
 }
@@ -43,7 +43,7 @@ ostream& operator<<(ostream& os, const BotTargetType& t)
 template<typename T>
 ostream& operator<<(ostream& os, const BotStatusType<T>& t)
 {
-    os << t.p.x << " " << t.p.y << " " << t.theta \
+    os << t.p.x << " " << t.p.y << " " << floor(180*t.theta/M_PI) \
        << " " << t.speed;
     return os;
 }
@@ -55,7 +55,8 @@ template<typename T> std::string to_string(const T &t)
     return ss.str();
 }
 
-static inline coord_t distance(coord2d_t &a, coord2d_t &b) {    
+template<typename T1, typename T2>
+static inline coord_t distance(T1 &a,T2 &b) {    
     coord_t c1 = b.x-a.x;
     coord_t c2 = b.y-a.y;
     return std::sqrt(c1*c1+c2*c2);

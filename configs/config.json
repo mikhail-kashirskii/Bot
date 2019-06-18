@@ -1,6 +1,6 @@
 {
-  "WheelSize": 10,
-  "WheelDist": 10,
-  "Epsilon": 3
+  "WheelSize": 1,
+  "WheelDist": 4,
+  "Epsilon": 5
 }
 

@@ -10,6 +10,7 @@ using json = nlohmann::json;
 
 class Bot {
     const chrono::milliseconds PollingFrequency = chrono::milliseconds(100);
+    const chrono::milliseconds EngineFrequency = chrono::milliseconds(100);
     typedef struct {
         coord_t wheelSize;
         coord_t wheelDist;
@@ -27,10 +28,12 @@ class Bot {
     void Engine() {
         while(1) {
             if (status.speed) {
-                status.p.x += status.speed;
-                status.p.y += status.speed;
+                double tact = 1.0*EngineFrequency / chrono::seconds(1); 
+                double distTact = 2.0*M_PI*config.wheelSize*status.speed * tact; 
+                status.p.x += distTact*cos(status.theta);
+                status.p.y += distTact*sin(status.theta);
             }
-            this_thread::sleep_for(PollingFrequency);
+            this_thread::sleep_for(EngineFrequency);
         }
 
     }
@@ -38,14 +41,16 @@ class Bot {
         while(1) {
             if (numTargets.load(std::memory_order_relaxed)) {
                 std::atomic_thread_fence(std::memory_order_acquire);
+                volatile coord2d_t p = {status.p.x, status.p.y};
 
                 if (status.speed == 0 && !targets.empty()) {
                     status.speed = targets.front().velocity;
+                    status.theta = targets.front().p.x==p.x ? M_PI/2 :
+                        atan((1.0*targets.front().p.y - p.y)/(targets.front().p.x-p.x));
                 }
                 if (status.speed) {
                     cout << "Current status: " << status << endl;
-                    coord2d_t p = {status.p.x, status.p.y};
-                    if (distance(targets.front().p, p)   <= config.epsilon) {
+                    if (distance(targets.front().p, p) <= config.epsilon) {
                         cout << "Target " << targets.front() <<" achieved!" << endl;
                         status.speed = 0;
                         targets.pop();
@@ -96,7 +101,7 @@ class Bot {
                 assert ( getline(iss, token, ' '));
                 t.p.y = stoi(token);
                 assert ( getline(iss, token, ' '));
-                t.theta = stoi(token);
+                t.theta = M_PI * stoi(token) / 180;
                 assert ( getline(iss, token, ' '));
                 t.velocity = stoi(token);
                 assert ( getline(iss, token, ' '));
