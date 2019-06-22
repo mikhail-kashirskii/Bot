@@ -1,5 +1,6 @@
 #ifndef BOT_CONTROLLER_H
 #define BOT_CONTROLLER_H
+#include <mutex>
 #include <httplib.h>
 #include <cassert>
 #include <bot-types.h>

@@ -30,8 +30,9 @@ Instruction to compile and run.
 1. Compile the project and run the Bot:
 
 ```c++
-    $ mkdir build && cd build && cmake .. && make -j4 all && Bot/bot ../configs/config.json
+    $ mkdir build && cd build && cmake .. && cmake --build . && Bot/bot ../configs/config.json
 ```
+Note: cmake generation command on MinGW is like this: cmake .. -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND"
 
 Expected output (Config read and the Bot is ready):
 
