@@ -1,7 +1,9 @@
 #include <iostream>
+#include <cassert>
+#include "bot-types.h"
 
 int main() {
-
-    std::cout << "DONE" <<std::endl;
-    return 0;
+	cout << "DONE" << endl;
+	return 0;
 }
+

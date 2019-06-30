@@ -1,6 +1,6 @@
 project(Bot)				
 
-set(SOURCE_EXE main.cc)			
+set(SOURCE_EXE main.cc utils.cc)			
 find_package(Threads REQUIRED)
 
 include_directories(../include)			

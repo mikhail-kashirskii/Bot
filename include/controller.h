@@ -1,8 +1,6 @@
-#ifndef BOT_CONTROLLER_H
-#define BOT_CONTROLLER_H
+#pragma once
 #include <mutex>
 #include <httplib.h>
-#include <cassert>
 #include <bot-types.h>
 
 using namespace std;
@@ -27,7 +25,4 @@ class BotController {
         auto res = cli.Post("/", str.c_str(), "text/plain");
         return res && res->status == 200 && res->body == "OK";
     }
-
-
 };
-#endif

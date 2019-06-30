@@ -1,7 +1,10 @@
-#ifndef BOT_UTILS_H
-#define BOT_UTILS_H
+#pragma once
 #include <cstdint>
 #include <cmath>
+#include <sstream>
+#include <future>
+#include <memory> 
+#include <queue>
 
 using namespace std;
 
@@ -14,11 +17,15 @@ typedef struct {
     coord_t y;
 } coord2d_t; 
 
-typedef struct {
+typedef struct BotTargetType {
     coord2d_t p;
     double theta;
     coord_t velocity;
     coord_t accel;
+	BotTargetType() = default;
+	BotTargetType (const BotTargetType&) = delete;
+	BotTargetType& operator=(const BotTargetType&) = delete;
+	BotTargetType& operator=(const BotTargetType&) volatile = delete;
 } BotTargetType;
 
 template<typename T>
@@ -33,7 +40,7 @@ struct  BotStatusType{
     BotStatusType():theta(0), speed(0){}
 };
 
-ostream& operator<<(ostream& os, const BotTargetType& t)
+static ostream& operator<<(ostream& os, const BotTargetType& t)
 {
     os << t.p.x << " " << t.p.y << " " << floor(180*t.theta/M_PI) \
        << " " << t.velocity << " " << t.accel;
@@ -41,7 +48,7 @@ ostream& operator<<(ostream& os, const BotTargetType& t)
 }
 
 template<typename T>
-ostream& operator<<(ostream& os, const BotStatusType<T>& t)
+static ostream& operator<<(ostream& os, const BotStatusType<T>& t)
 {
     os << t.p.x << " " << t.p.y << " " << floor(180*t.theta/M_PI) \
        << " " << t.speed;
@@ -61,4 +68,3 @@ static inline coord_t distance(T1 &a,T2 &b) {
     coord_t c2 = b.y-a.y;
     return std::sqrt(c1*c1+c2*c2);
 }
-#endif
