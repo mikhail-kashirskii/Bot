@@ -5,8 +5,8 @@ void Bot::Engine() {
 		if (status.speed) {
 			double tact = 1.0*EngineFrequency / chrono::seconds(1); 
 			double distTact = 2.0*M_PI*config.wheelSize*status.speed * tact; 
-			status.p.x += distTact*cos(status.theta);
-			status.p.y += distTact*sin(status.theta);
+			status.p.x += distTact*cos(M_PI*status.theta / 180);
+			status.p.y += distTact*sin(M_PI*status.theta / 180);
 		}
 		this_thread::sleep_for(EngineFrequency);
 	}
@@ -24,8 +24,11 @@ void Bot::Controller() {
 					targets.pop();
 					status.speed = target->velocity;
 					volatile coord2d_t p = {status.p.x, status.p.y};
-					status.theta = target->p.x==p.x ? M_PI/2 :
-						atan((1.0*target->p.y - p.y)/(target->p.x-p.x));
+					double theta_ = atan((1.0*target->p.y - p.y)/(target->p.x-p.x));
+					status.theta = floor(180*theta_/M_PI);
+					if ((target->p.x - p.x)<0) {
+						status.theta += 180;
+					}
 			}					
 		}
 		if (status.speed) {

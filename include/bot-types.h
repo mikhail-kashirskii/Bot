@@ -11,7 +11,7 @@ using namespace std;
 #define BOT_HOST "localhost"
 #define BOT_PORT 1234
 
-typedef uint32_t coord_t; 
+typedef int32_t coord_t; 
 typedef struct {
     coord_t x;
     coord_t y;
@@ -19,7 +19,7 @@ typedef struct {
 
 typedef struct BotTargetType {
     coord2d_t p;
-    double theta;
+    int16_t theta;
     coord_t velocity;
     coord_t accel;
 	BotTargetType() = default;
@@ -50,7 +50,7 @@ static ostream& operator<<(ostream& os, const BotTargetType& t)
 template<typename T>
 static ostream& operator<<(ostream& os, const BotStatusType<T>& t)
 {
-    os << t.p.x << " " << t.p.y << " " << floor(180*t.theta/M_PI) \
+    os << t.p.x << " " << t.p.y << " " << t.theta \
        << " " << t.speed;
     return os;
 }
