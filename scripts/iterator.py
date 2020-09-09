@@ -2,10 +2,6 @@ from datetime import datetime
 from time import sleep
 
 
-def fromiso(time):
-    return datetime.fromisoformat(time)
-
-
 class TouchedIterator:
     def __init__(self, touches, depths, rgbs, delay=False):
         self.result = []
@@ -72,6 +68,9 @@ class TouchedIterator:
 
 class TestInput:
     def test1(self):
+        def fromiso(time):
+            return datetime.fromisoformat(time)
+
         touches_ = {
             fromiso('2020-09-09 10:26:39.511879'): [12, 13],
             fromiso('2020-09-09 10:26:38.511879'): [10, 11],
